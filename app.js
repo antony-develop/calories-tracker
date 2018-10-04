@@ -22,6 +22,9 @@ const ItemCtrl = (function () {
     }
 
     return {
+        getItems: function() {
+            return data.items;
+        },
         logData: function() {
             return data;
         }
@@ -29,8 +32,33 @@ const ItemCtrl = (function () {
 })();
 
 const UICtrl = (function () {
+    uiSelectors = {
+        itemList: '#item-list',
+        addBtn: '.add-btn',
+        itemNameInput: '#item-name',
+        itemCaloriesInput: '#item-calories',
+    }
 
     return {
+        populateItemList: function(items) {
+            let itemsHtml = '';
+
+            for (let item of items) {
+                itemsHtml += `
+                    <li class="collection-item" id="item-${item.id}">
+                        <strong>${item.name}: </strong> <em>${item.calories} Calories</em>
+                        <a href="#" class="secondary-content">
+                            <i class="edit-item fa fa-pencil"></i>
+                        </a>
+                    </li>
+                `;
+            }
+
+            document.querySelector(uiSelectors.itemList).innerHTML = itemsHtml;
+        },
+        getSelectors: function() {
+            return uiSelectors;
+        },
         
     }
 })();
@@ -40,7 +68,9 @@ const AppCtrl = (function(ItemCtrl, UICtrl) {
     // Public methods
     return {
         init: function() {
-            console.log('init...');
+            const items = ItemCtrl.getItems();
+
+            UICtrl.populateItemList(items);
         }
     }
 })(ItemCtrl, UICtrl);
