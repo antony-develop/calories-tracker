@@ -25,6 +25,21 @@ const ItemCtrl = (function () {
         getItems: function() {
             return data.items;
         },
+        addItem: function(name, calories) {
+            // create new item id
+            let id = 0;
+            if (data.items.length > 0) {
+                id = data.items[data.items.length - 1].id + 1;
+            }
+
+            calories = parseInt(calories);
+
+            const newItem = new Item(id, name, calories);
+
+            data.items.push(newItem);
+
+            return newItem;
+        },
         logData: function() {
             return data;
         }
@@ -56,6 +71,12 @@ const UICtrl = (function () {
 
             document.querySelector(uiSelectors.itemList).innerHTML = itemsHtml;
         },
+        getItemInput: function() {
+          return {
+              name: document.querySelector(uiSelectors.itemNameInput).value,
+              calories: document.querySelector(uiSelectors.itemCaloriesInput).value,
+          }  
+        },
         getSelectors: function() {
             return uiSelectors;
         },
@@ -64,6 +85,22 @@ const UICtrl = (function () {
 })();
 
 const AppCtrl = (function(ItemCtrl, UICtrl) {
+    const loadEventListeners = function() {
+        uiSelectors = UICtrl.getSelectors();
+
+        document.querySelector(uiSelectors.addBtn).addEventListener('click', itemAddSubmit);
+    }
+
+    const itemAddSubmit = function(e) {
+        e.preventDefault();
+
+        const input = UICtrl.getItemInput();
+        
+        // Check if meal and colories is not empty
+        if (input.name !== '' && input.calories !== '') {
+            const newItem = ItemCtrl.addItem(input.name, input.calories);
+        }
+    }
     
     // Public methods
     return {
@@ -71,6 +108,8 @@ const AppCtrl = (function(ItemCtrl, UICtrl) {
             const items = ItemCtrl.getItems();
 
             UICtrl.populateItemList(items);
+            
+            loadEventListeners();
         }
     }
 })(ItemCtrl, UICtrl);
