@@ -1,5 +1,27 @@
 const StorageCtrl = (function () {
 
+    // Public methods
+    return {
+        storeItem: function(item) {
+            let items = [];
+            if (localStorage.getItem('items') === null) {
+                items.push(item);
+            } else {
+                let items = JSON.parse(localStorage.getItem('items'));
+                items.push(item);
+            }
+
+            localStorage.setItem('items', JSON.stringify(items));
+        },
+        getItems: function() {
+            const itemsJson = localStorage.getItem('items');
+            if (itemsJson === null) {
+                return [];
+            } else {
+                return JSON.parse(itemsJson);
+            }
+        }
+    }
 })();
 
 const ItemCtrl = (function () {
@@ -12,11 +34,7 @@ const ItemCtrl = (function () {
 
     // Data structure / State
     const data = {
-        items: [
-            // {id: 0, name: 'Steak', calories: 1200},
-            // {id: 1, name: 'Cookie', calories: 400},
-            // {id: 2, name: 'Eggs', calories: 300},
-        ],
+        items: StorageCtrl.getItems(),
         currentItem: null,
         totalCalories: 0
     }
@@ -210,7 +228,7 @@ const UICtrl = (function () {
     }
 })();
 
-const AppCtrl = (function(ItemCtrl, UICtrl) {
+const AppCtrl = (function(ItemCtrl, StorageCtrl, UICtrl) {
     const loadEventListeners = function() {
         uiSelectors = UICtrl.getSelectors();
         
@@ -252,6 +270,8 @@ const AppCtrl = (function(ItemCtrl, UICtrl) {
 
             const totalCalories = ItemCtrl.getTotalCalories();
             UICtrl.showTotalCalories(totalCalories);
+
+            StorageCtrl.storeItem(newItem);
 
             UICtrl.clearInput();
         }
@@ -334,7 +354,7 @@ const AppCtrl = (function(ItemCtrl, UICtrl) {
             loadEventListeners();
         }
     }
-})(ItemCtrl, UICtrl);
+})(ItemCtrl, StorageCtrl, UICtrl);
 
 // Start app
 AppCtrl.init();
